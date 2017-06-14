@@ -12,36 +12,39 @@ if Nargv == 1:
 elif Nargv == 2:
 
     fname = sys.argv[1]
-    patterns = ['pro', 'function']
-
-    f = open(fname, 'r')
-    lines = f.readlines()
-    lines_new = []
-    for i in range(len(lines)):
-        line  = lines[i].lower().strip()
-
-        if any(line[:len(pattern)] == pattern for pattern in patterns):
-            if line[-1] == '$':
-                line_new = line[:-1]
-                j = i+1
-                while lines[j].lower().strip()[-1] == '$':
-                    line_new = line_new + lines[j].lower().strip()[:-1]
-                    j += 1
-                line_new = line_new + lines[j].lower().strip()[:-1]
-            else:
-                line_new = line
-
-            for pattern in patterns:
-                line_new = line_new.replace(pattern, '').strip()
-
-            words    = line_new.split(',')
-            words[0] = words[0].upper()
-            line_new = ', '.join(words)
-            lines_new.append(line_new)
-
-    f.close()
+    if not os.path.isfile(fname):
+        exit('Error [idl-py]: file does not exist.')
 
     if fname.split('.')[-1] == 'pro':
+        patterns = ['pro', 'function']
+
+        f = open(fname, 'r')
+        lines = f.readlines()
+        lines_new = []
+        for i in range(len(lines)):
+            line  = lines[i].lower().strip()
+
+            if any(line[:len(pattern)] == pattern for pattern in patterns):
+                if line[-1] == '$':
+                    line_new = line[:-1]
+                    j = i+1
+                    while lines[j].lower().strip()[-1] == '$':
+                        line_new = line_new + lines[j].lower().strip()[:-1]
+                        j += 1
+                    line_new = line_new + lines[j].lower().strip()[:-1]
+                else:
+                    line_new = line
+
+                for pattern in patterns:
+                    line_new = line_new.replace(pattern, '').strip()
+
+                words    = line_new.replace(' ', '').split(',')
+                words[0] = words[0].upper()
+                line_new = ', '.join(words)
+                lines_new.append(line_new)
+
+        f.close()
+
         idl = pexpect.spawnu('idl')
         idl.expect('IDL> ', timeout=10)
         print(idl.before.rstrip('\n'))
@@ -50,11 +53,19 @@ elif Nargv == 2:
         idl.expect('IDL> ', timeout=10)
         message = 'IDL> ' + idl.before
         print(message)
-        print('IDL> Hit "Enter" to continue...\n')
-        for line_new in lines_new:
-            print(line_new)
-        idl.interact()
-        idl.close()
+        if 'Error' not in message:
+            if len(line_new)>=1:
+                print('+ How to run')
+                for line_new in lines_new:
+                    print(line_new)
+                print('-\n')
+            print('Hit "Enter" to continue...\n')
+            idl.interact()
+            idl.close()
+        else:
+            idl.close()
+            exit('IDL> Compile FAILED.\n')
+
     else:
 
         exit('Error [idl-py]: wrong file type.')
