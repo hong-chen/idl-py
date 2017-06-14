@@ -12,6 +12,35 @@ if Nargv == 1:
 elif Nargv == 2:
 
     fname = sys.argv[1]
+    patterns = ['pro', 'function']
+
+    f = open(fname, 'r')
+    lines = f.readlines()
+    lines_new = []
+    for i in range(len(lines)):
+        line  = lines[i].lower().strip()
+
+        if any(line[:len(pattern)] == pattern for pattern in patterns):
+            if line[-1] == '$':
+                line_new = line[:-1]
+                j = i+1
+                while lines[j].lower().strip()[-1] == '$':
+                    line_new = line_new + lines[j].lower().strip()[:-1]
+                    j += 1
+                line_new = line_new + lines[j].lower().strip()[:-1]
+            else:
+                line_new = line
+
+            for pattern in patterns:
+                line_new = line_new.replace(pattern, '').strip()
+
+            words    = line_new.split(',')
+            words[0] = words[0].upper()
+            line_new = ', '.join(words)
+            lines_new.append(line_new)
+
+    f.close()
+
     if fname.split('.')[-1] == 'pro':
         idl = pexpect.spawnu('idl')
         idl.expect('IDL> ', timeout=10)
@@ -20,8 +49,10 @@ elif Nargv == 2:
         idl.sendline(command)
         idl.expect('IDL> ', timeout=10)
         message = 'IDL> ' + idl.before
-        print(message.rstrip('\n'))
+        print(message)
         print('IDL> Hit "Enter" to continue...')
+        for line_new in lines_new:
+            print(line_new)
         idl.interact()
         idl.close()
     else:
