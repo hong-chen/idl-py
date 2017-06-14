@@ -1,4 +1,4 @@
-#!/Users/hoch4240/Chen/soft/python/3/bin/python
+#!/usr/bin/env python
 import sys
 import os
 import pexpect
