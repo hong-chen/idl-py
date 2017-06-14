@@ -1,0 +1,32 @@
+#!/Users/hoch4240/Chen/soft/python/3/bin/python
+import sys
+import os
+import pexpect
+
+Nargv = len(sys.argv)
+
+if Nargv == 1:
+
+    os.system('idl')
+
+elif Nargv == 2:
+
+    fname = sys.argv[1]
+    if fname.split('.')[-1] == 'pro':
+        idl = pexpect.spawnu('idl')
+        idl.expect('IDL> ', timeout=10)
+        print(idl.before.rstrip('\n'))
+        command = '.r %s' % fname
+        idl.sendline(command)
+        idl.expect('IDL> ', timeout=10)
+        message = 'IDL> ' + idl.before
+        print(message.rstrip('\n'))
+        print('IDL> Hit "Enter" to continue...')
+        idl.interact()
+        idl.close()
+    else:
+
+        exit('Error [idl-py]: wrong file type.')
+
+else:
+    exit('Error [idl-py]: too many arguments.')
