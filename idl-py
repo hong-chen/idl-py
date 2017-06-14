@@ -50,7 +50,7 @@ elif Nargv == 2:
         idl.expect('IDL> ', timeout=10)
         message = 'IDL> ' + idl.before
         print(message)
-        print('IDL> Hit "Enter" to continue...')
+        print('IDL> Hit "Enter" to continue...\n')
         for line_new in lines_new:
             print(line_new)
         idl.interact()
