@@ -24,7 +24,7 @@ idl-py muslope.pro
 ```
 
 The output on the screen will look like
-```idl
+```text
 IDL Version 8.5.1, Mac OS X (darwin x86_64 m64).
 (c) 2015, Exelis Visual Information Solutions, Inc., a subsidiary of Harris Corporation.
 Installation number: 100-3091.
