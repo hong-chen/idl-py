@@ -5,6 +5,8 @@
 Automatically complile the `.pro` file and provide a sample
 line to run the procedures or functions in the targeted file.
 
+Tested 
+
 ---
 
 ## How to use
