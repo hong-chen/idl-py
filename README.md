@@ -1,11 +1,16 @@
 # idl-py
 
+## Dependencies
+
+Python 3.6
+  - [pexpect](https://pexpect.readthedocs.io/en/stable)
+
+---
+
 ## Description
 
 Automatically complile the `.pro` file and provide a sample
 line to run the procedures or functions in the targeted file.
-
-Tested 
 
 ---
 
