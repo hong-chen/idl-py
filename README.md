@@ -2,9 +2,11 @@
 
 ## Dependencies
 
-Python 3.6
+- Python 3.6
   - [pexpect](https://pexpect.readthedocs.io/en/stable)
 
+- [IDL](http://www.harrisgeospatial.com/ProductsandTechnology/Software/IDL.aspx)
+  - To let IDL run on terminal, add `export PATH="/Applications/exelis/idl85/bin:$PATH"` to `.bashrc`.
 ---
 
 ## Description
