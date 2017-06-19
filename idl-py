@@ -53,6 +53,7 @@ elif Nargv == 2:
         idl.expect('IDL> ', timeout=10)
         message = 'IDL> ' + idl.before
         print(message)
+
         if 'Error' not in message:
             if len(line_new)>=1:
                 print('+ How to run')
