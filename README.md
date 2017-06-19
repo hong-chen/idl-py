@@ -7,7 +7,7 @@
   - sys
   - [pexpect](https://pexpect.readthedocs.io/en/stable)
 
-    To install `pexpect`, type `pip install pexpect` in a terminal.
+    To install `pexpect`, try `pip install pexpect` in a terminal.
 
 - [IDL](http://www.harrisgeospatial.com/ProductsandTechnology/Software/IDL.aspx)
   - To get IDL running in a terminal, add `export PATH="/Applications/exelis/idl85/bin:$PATH"` to `.bashrc` (or `.bash_profile`).
