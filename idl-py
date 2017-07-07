@@ -7,7 +7,7 @@
 import sys
 import os
 import pexpect
-from prompt_toolkit import prompt
+from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
 from pygments.lexers import IDLLexer
 
@@ -55,31 +55,29 @@ elif Nargv == 2:
 
 
 
-        # idl = pexpect.spawnu('idl')
-        # idl.expect('IDL> ', timeout=10)
-        # print(idl.before.rstrip('\n'))
-        # command = '.r %s' % fname
-        # idl.sendline(command)
-        # idl.expect('IDL> ', timeout=10)
-        # message = 'IDL> ' + idl.before
-        # print(message)
+        idl = pexpect.spawnu('idl')
+        idl.expect('IDL> ', timeout=10)
+        print(idl.before.rstrip('\n'))
+        command = '.r %s' % fname
+        idl.sendline(command)
+        idl.expect('IDL> ', timeout=10)
+        message = 'IDL-PY> ' + idl.before
+        print(message)
 
         history = InMemoryHistory()
         while True:
-            text = prompt('IDL> ', lexer=IDLLexer, history=history)
-
-        # if 'Error' not in message:
-        #     if len(line_new)>=1:
-        #         print('+ How to run')
-        #         for line_new in lines_new:
-        #             print(line_new)
-        #         print('-\n')
-        #     print('Hit "Enter" to continue...\n')
-        #     idl.interact()
-        #     idl.close()
-        # else:
-        #     idl.close()
-        #     exit('IDL> Compile FAILED.\n')
+            try:
+                command = prompt('IDL-PY> ', lexer=IDLLexer, history=history, on_abort=AbortAction.RETRY)
+                if command == 'exit':
+                    exit('Bye.')
+                else:
+                    idl.sendline(command)
+                    idl.expect('IDL> ', timeout=10)
+                    message = idl.before[len(command):].strip()
+                    print(message)
+            except EOFError:
+                break
+        print('Bye.')
 
     else:
 
