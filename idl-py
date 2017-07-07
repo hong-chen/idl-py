@@ -12,7 +12,9 @@ from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
 from pygments.lexers import IDLLexer
 from prompt_toolkit.layout.lexers import PygmentsLexer
+from prompt_toolkit.contrib.completers import WordCompleter
 from termcolor import colored, cprint
+
 
 def FIND_FUNCTIONS_IDL(fname):
 
@@ -48,7 +50,6 @@ def FIND_FUNCTIONS_IDL(fname):
 
     return lines_func
 
-
 def CPRINT_DOT_R(fname, idl):
 
     command = '.r %s' % fname
@@ -68,6 +69,7 @@ def CPRINT_DOT_R(fname, idl):
     return idl
 
 def START():
+
 
     Nargv = len(sys.argv)
 
@@ -102,12 +104,13 @@ def START():
 
 
         history = InMemoryHistory()
+        idl_completer = WordCompleter(['restore, ', 'save, ', 'print, ', 'exit', 'plot, '], ignore_case=True)
 
         while True:
 
             try:
 
-                command = prompt('IDL-PY> ', lexer=PygmentsLexer(IDLLexer), history=history, on_abort=AbortAction.RETRY)
+                command = prompt('IDL-PY> ', lexer=PygmentsLexer(IDLLexer), history=history, on_abort=AbortAction.RETRY, completer=idl_completer)
 
                 command = command.strip()
 
@@ -129,7 +132,7 @@ def START():
                         message_before = colored('Out:\n', 'blue')
                         if 'Execution halted' in message:
                             if shutil.which(command) != None:
-                                message = 'this is a shell command...'
+                                message = 'this is a shell command, will do something with it later...'
                                 message = message_before + message
                             else:
                                 message = message_before + colored(idl.before[len(command):].strip(), 'red')
