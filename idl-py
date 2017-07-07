@@ -7,6 +7,9 @@
 import sys
 import os
 import pexpect
+from prompt_toolkit import prompt
+from prompt_toolkit.history import InMemoryHistory
+from pygments.lexers import IDLLexer
 
 Nargv = len(sys.argv)
 
@@ -50,27 +53,33 @@ elif Nargv == 2:
 
         f.close()
 
-        idl = pexpect.spawnu('idl')
-        idl.expect('IDL> ', timeout=10)
-        print(idl.before.rstrip('\n'))
-        command = '.r %s' % fname
-        idl.sendline(command)
-        idl.expect('IDL> ', timeout=10)
-        message = 'IDL> ' + idl.before
-        print(message)
 
-        if 'Error' not in message:
-            if len(line_new)>=1:
-                print('+ How to run')
-                for line_new in lines_new:
-                    print(line_new)
-                print('-\n')
-            print('Hit "Enter" to continue...\n')
-            idl.interact()
-            idl.close()
-        else:
-            idl.close()
-            exit('IDL> Compile FAILED.\n')
+
+        # idl = pexpect.spawnu('idl')
+        # idl.expect('IDL> ', timeout=10)
+        # print(idl.before.rstrip('\n'))
+        # command = '.r %s' % fname
+        # idl.sendline(command)
+        # idl.expect('IDL> ', timeout=10)
+        # message = 'IDL> ' + idl.before
+        # print(message)
+
+        history = InMemoryHistory()
+        while True:
+            text = prompt('IDL> ', lexer=IDLLexer, history=history)
+
+        # if 'Error' not in message:
+        #     if len(line_new)>=1:
+        #         print('+ How to run')
+        #         for line_new in lines_new:
+        #             print(line_new)
+        #         print('-\n')
+        #     print('Hit "Enter" to continue...\n')
+        #     idl.interact()
+        #     idl.close()
+        # else:
+        #     idl.close()
+        #     exit('IDL> Compile FAILED.\n')
 
     else:
 
