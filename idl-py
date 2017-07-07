@@ -13,63 +13,88 @@ from pygments.lexers import IDLLexer
 from prompt_toolkit.layout.lexers import PygmentsLexer
 from termcolor import colored, cprint
 
-Nargv = len(sys.argv)
+def FIND_FUNCTIONS_IDL(fname):
 
-if Nargv == 1:
-
-    os.system('idl')
-
-elif Nargv == 2:
-
-    fname = sys.argv[1]
     if not os.path.isfile(fname):
-        exit('Error [idl-py]: file does not exist.')
+
+        cprint('Error [idl-py]: "%s" does not exist.' % fname, 'red')
+        sys.exit()
 
     if fname.split('.')[-1].lower() == 'pro':
+
         patterns = ['pro', 'function']
+
+        lines_func = []
 
         f = open(fname, 'r')
         lines = f.readlines()
-        lines_new = []
         for i in range(len(lines)):
             line  = lines[i].lower().strip()
 
             if any(line[:len(pattern)] == pattern for pattern in patterns):
+
                 if line[-1] == '$':
-                    line_new = line[:-1]
+                    line_func = line[:-1]
                     j = i+1
                     while lines[j].lower().strip()[-1] == '$':
-                        line_new = line_new + lines[j].lower().strip()[:-1]
+                        line_func = line_func + lines[j].lower().strip()[:-1]
                         j += 1
-                    line_new = line_new + lines[j].lower().strip()
+                    line_func = line_func + lines[j].lower().strip()
                 else:
-                    line_new = line
+                    line_func = line
 
                 for pattern in patterns:
-                    line_new = line_new.replace(pattern, '').strip()
+                    line_func = line_func.replace(pattern, '').strip()
 
-                words    = line_new.replace(' ', '').split(',')
+                words    = line_func.replace(' ', '').split(',')
                 words[0] = words[0].upper()
-                line_new = ', '.join(words)
-                lines_new.append(line_new)
-
+                line_func = ', '.join(words)
+                lines_func.append(line_func)
         f.close()
+
+        return lines_func
+
+    else:
+
+        cprint('Error [idl-py]: wrong file type.', 'red')
+        sys.exit()
+
+def CPRINT_DOT_R(fname, idl):
+
+    command = '.r %s' % fname
+    idl.sendline(command)
+    idl.expect('IDL> ', timeout=10)
+
+    message_before = colored('Out:\n', 'blue')
+    message = message_before + idl.before[len(command):].strip()
+    print(message)
+
+    lines_func = FIND_FUNCTIONS_IDL(fname)
+    cprint('+', 'red')
+    message = '\n\n'.join(lines_func)
+    cprint(message, 'green')
+    cprint('-\n', 'red')
+
+    return idl
+
+def START():
+
+    Nargv = len(sys.argv)
+
+    if Nargv==1 or Nargv==2:
 
         idl = pexpect.spawnu('idl')
         idl.expect('IDL> ', timeout=10)
         print(idl.before.rstrip('\n'))
-        command = '.r %s' % fname
-        idl.sendline(command)
-        idl.expect('IDL> ', timeout=10)
-        message = 'IDL-PY> ' + idl.before
-        print(message)
 
-        cprint('+', 'red')
-        line_new = '\n\n'.join(lines_new)
-        cprint(line_new, 'green')
-        cprint('-\n', 'red')
+        if Nargv == 2:
+
+            fname = sys.argv[1]
+            print('IDL-PY> ')
+            idl = CPRINT_DOT_R(fname, idl)
 
         history = InMemoryHistory()
+
         while True:
 
             try:
@@ -78,7 +103,12 @@ elif Nargv == 2:
 
                 if command == 'exit':
 
-                    exit('\nGoodbye.')
+                    exit()
+
+                elif command.strip()[:2] == '.r':
+
+                    fname = command.strip()[2:].strip()
+                    CPRINT_DOT_R(fname, idl)
 
                 else:
 
@@ -97,7 +127,10 @@ elif Nargv == 2:
 
     else:
 
-        exit('Error [idl-py]: wrong file type.')
+        cprint('Error [idl-py]: too many arguments.', 'red')
 
-else:
-    exit('Error [idl-py]: too many arguments.')
+if __name__ == "__main__":
+
+    START()
+
+
