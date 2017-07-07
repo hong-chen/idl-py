@@ -10,6 +10,7 @@ import pexpect
 from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
 from pygments.lexers import IDLLexer
+from prompt_toolkit.layout.lexers import PygmentsLexer
 
 Nargv = len(sys.argv)
 
@@ -72,7 +73,7 @@ elif Nargv == 2:
 
             try:
 
-                command = prompt('IDL-PY> ', lexer=IDLLexer, history=history, on_abort=AbortAction.RETRY)
+                command = prompt('IDL-PY> ', lexer=PygmentsLexer(IDLLexer), history=history, on_abort=AbortAction.RETRY)
 
                 if command == 'exit':
 
