@@ -62,6 +62,11 @@ elif Nargv == 2:
         message = 'IDL-PY> ' + idl.before
         print(message)
 
+        print('+ How to run')
+        for line_new in lines_new:
+            print(line_new)
+        print('-\n')
+
         history = InMemoryHistory()
         while True:
             try:
@@ -73,7 +78,8 @@ elif Nargv == 2:
                     idl.sendline(command)
                     idl.expect('IDL> ', timeout=10)
                     message = idl.before[len(command):].strip()
-                    print(message)
+                    if len(message) > 0:
+                        print(message)
 
             except EOFError:
                 break
