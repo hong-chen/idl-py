@@ -18,6 +18,7 @@ from termcolor import colored, cprint
 
 
 def FIND_FUNCTIONS_IDL(fname):
+
     if not os.path.isfile(fname) or fname.split('.')[-1].lower() != 'pro':
 
         lines_func = None
@@ -79,34 +80,35 @@ def START():
 
     Nargv = len(sys.argv)
 
-    if Nargv==1:
+    if Nargv==1 or Nargv==2:
 
-        idl = pexpect.spawnu('idl')
-        idl.expect('IDL> ', timeout=10)
-        print(idl.before.rstrip('\n'))
-
-    elif Nargv == 2:
-
-        fname = sys.argv[1]
-
-        if not os.path.isfile(fname):
-
-            cprint('Error [idl-py]: "%s" does not exist.' % fname, 'red')
-            sys.exit()
-
-        if fname.split('.')[-1].lower() == 'pro':
-
+        if Nargv == 1:
             idl = pexpect.spawnu('idl')
             idl.expect('IDL> ', timeout=10)
             print(idl.before.rstrip('\n'))
 
-            print('IDL-PY> ')
-            idl = CPRINT_DOT_R(fname, idl)
+        elif Nargv == 2:
 
-        else:
+            fname = sys.argv[1]
 
-            cprint('Error [idl-py]: wrong file type.', 'red')
-            sys.exit()
+            if not os.path.isfile(fname):
+
+                cprint('Error [idl-py]: "%s" does not exist.' % fname, 'red')
+                sys.exit()
+
+            if fname.split('.')[-1].lower() == 'pro':
+
+                idl = pexpect.spawnu('idl')
+                idl.expect('IDL> ', timeout=10)
+                print(idl.before.rstrip('\n'))
+
+                print('IDL-PY> ')
+                idl = CPRINT_DOT_R(fname, idl)
+
+            else:
+
+                cprint('Error [idl-py]: wrong file type.', 'red')
+                sys.exit()
 
 
         history = InMemoryHistory()
