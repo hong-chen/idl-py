@@ -65,16 +65,21 @@ elif Nargv == 2:
         print('+ How to run')
         for line_new in lines_new:
             print(line_new)
-        print('-\n')
+        print('-')
 
         history = InMemoryHistory()
         while True:
+
             try:
+
                 command = prompt('IDL-PY> ', lexer=IDLLexer, history=history, on_abort=AbortAction.RETRY)
 
                 if command == 'exit':
-                    exit('Bye.')
+
+                    exit('\nGoodbye.')
+
                 else:
+
                     idl.sendline(command)
                     idl.expect('IDL> ', timeout=10)
                     message = idl.before[len(command):].strip()
@@ -82,7 +87,8 @@ elif Nargv == 2:
                         print(message)
 
             except EOFError:
-                break
+
+                exit('Error [idl-py]: Exiting...')
 
     else:
 
