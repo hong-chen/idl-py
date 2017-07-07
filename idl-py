@@ -16,49 +16,38 @@ from termcolor import colored, cprint
 
 def FIND_FUNCTIONS_IDL(fname):
 
-    if not os.path.isfile(fname):
+    patterns = ['pro', 'function']
 
-        cprint('Error [idl-py]: "%s" does not exist.' % fname, 'red')
-        sys.exit()
+    lines_func = []
 
-    if fname.split('.')[-1].lower() == 'pro':
+    f = open(fname, 'r')
+    lines = f.readlines()
+    for i in range(len(lines)):
+        line  = lines[i].lower().strip()
 
-        patterns = ['pro', 'function']
+        if any(line[:len(pattern)] == pattern for pattern in patterns):
 
-        lines_func = []
+            if line[-1] == '$':
+                line_func = line[:-1]
+                j = i+1
+                while lines[j].lower().strip()[-1] == '$':
+                    line_func = line_func + lines[j].lower().strip()[:-1]
+                    j += 1
+                line_func = line_func + lines[j].lower().strip()
+            else:
+                line_func = line
 
-        f = open(fname, 'r')
-        lines = f.readlines()
-        for i in range(len(lines)):
-            line  = lines[i].lower().strip()
+            for pattern in patterns:
+                line_func = line_func.replace(pattern, '').strip()
 
-            if any(line[:len(pattern)] == pattern for pattern in patterns):
+            words    = line_func.replace(' ', '').split(',')
+            words[0] = words[0].upper()
+            line_func = ', '.join(words)
+            lines_func.append(line_func)
+    f.close()
 
-                if line[-1] == '$':
-                    line_func = line[:-1]
-                    j = i+1
-                    while lines[j].lower().strip()[-1] == '$':
-                        line_func = line_func + lines[j].lower().strip()[:-1]
-                        j += 1
-                    line_func = line_func + lines[j].lower().strip()
-                else:
-                    line_func = line
+    return lines_func
 
-                for pattern in patterns:
-                    line_func = line_func.replace(pattern, '').strip()
-
-                words    = line_func.replace(' ', '').split(',')
-                words[0] = words[0].upper()
-                line_func = ', '.join(words)
-                lines_func.append(line_func)
-        f.close()
-
-        return lines_func
-
-    else:
-
-        cprint('Error [idl-py]: wrong file type.', 'red')
-        sys.exit()
 
 def CPRINT_DOT_R(fname, idl):
 
@@ -82,17 +71,35 @@ def START():
 
     Nargv = len(sys.argv)
 
-    if Nargv==1 or Nargv==2:
+    if Nargv==1:
 
         idl = pexpect.spawnu('idl')
         idl.expect('IDL> ', timeout=10)
         print(idl.before.rstrip('\n'))
 
-        if Nargv == 2:
+    elif Nargv == 2:
 
-            fname = sys.argv[1]
+        fname = sys.argv[1]
+
+        if not os.path.isfile(fname):
+
+            cprint('Error [idl-py]: "%s" does not exist.' % fname, 'red')
+            sys.exit()
+
+        if fname.split('.')[-1].lower() == 'pro':
+
+            idl = pexpect.spawnu('idl')
+            idl.expect('IDL> ', timeout=10)
+            print(idl.before.rstrip('\n'))
+
             print('IDL-PY> ')
             idl = CPRINT_DOT_R(fname, idl)
+
+        else:
+
+            cprint('Error [idl-py]: wrong file type.', 'red')
+            sys.exit()
+
 
         history = InMemoryHistory()
 
