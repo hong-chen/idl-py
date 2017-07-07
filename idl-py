@@ -101,14 +101,16 @@ def START():
 
                 command = prompt('IDL-PY> ', lexer=PygmentsLexer(IDLLexer), history=history, on_abort=AbortAction.RETRY)
 
+                command = command.strip()
+
                 if command == 'exit':
 
                     exit()
 
-                elif command.strip()[:2] == '.r':
+                elif command[:2] == '.r':
 
-                    fname = command.strip()[2:].strip()
-                    CPRINT_DOT_R(fname, idl)
+                    fname = command[2:].strip()
+                    idl = CPRINT_DOT_R(fname, idl)
 
                 else:
 
@@ -132,5 +134,3 @@ def START():
 if __name__ == "__main__":
 
     START()
-
-
