@@ -53,8 +53,6 @@ elif Nargv == 2:
 
         f.close()
 
-
-
         idl = pexpect.spawnu('idl')
         idl.expect('IDL> ', timeout=10)
         print(idl.before.rstrip('\n'))
@@ -68,6 +66,7 @@ elif Nargv == 2:
         while True:
             try:
                 command = prompt('IDL-PY> ', lexer=IDLLexer, history=history, on_abort=AbortAction.RETRY)
+
                 if command == 'exit':
                     exit('Bye.')
                 else:
@@ -75,9 +74,9 @@ elif Nargv == 2:
                     idl.expect('IDL> ', timeout=10)
                     message = idl.before[len(command):].strip()
                     print(message)
+
             except EOFError:
                 break
-        print('Bye.')
 
     else:
 
