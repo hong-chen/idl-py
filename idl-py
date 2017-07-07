@@ -6,6 +6,7 @@
 
 import sys
 import os
+import shutil
 import pexpect
 from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
@@ -70,10 +71,10 @@ def CPRINT_DOT_R(fname, idl):
     print(message)
 
     lines_func = FIND_FUNCTIONS_IDL(fname)
-    cprint('+', 'red')
     message = '\n\n'.join(lines_func)
+    print()
     cprint(message, 'green')
-    cprint('-\n', 'red')
+    print()
 
     return idl
 
@@ -119,8 +120,15 @@ def START():
                     message = idl.before[len(command):].strip()
                     if len(message) > 0:
                         message_before = colored('Out:\n', 'blue')
-                        message = message_before + idl.before[len(command):].strip()
+                        if 'Execution halted' in message:
+                            if shutil.which(command) != None:
+                                message = 'this is a shell command...'
+                                message = message_before + message
+                            else:
+                                message = message_before + colored(idl.before[len(command):].strip(), 'red')
+
                         print(message)
+
                     print()
 
             except EOFError:
