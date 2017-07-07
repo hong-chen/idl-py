@@ -25,7 +25,7 @@ elif Nargv == 2:
     if not os.path.isfile(fname):
         exit('Error [idl-py]: file does not exist.')
 
-    if fname.split('.')[-1] == 'pro':
+    if fname.split('.')[-1].lower() == 'pro':
         patterns = ['pro', 'function']
 
         f = open(fname, 'r')
@@ -41,7 +41,7 @@ elif Nargv == 2:
                     while lines[j].lower().strip()[-1] == '$':
                         line_new = line_new + lines[j].lower().strip()[:-1]
                         j += 1
-                    line_new = line_new + lines[j].lower().strip()[:-1]
+                    line_new = line_new + lines[j].lower().strip()
                 else:
                     line_new = line
 
@@ -64,10 +64,10 @@ elif Nargv == 2:
         message = 'IDL-PY> ' + idl.before
         print(message)
 
-        print('+ How to run')
-        for line_new in lines_new:
-            print(line_new)
-        print('-')
+        cprint('+', 'red')
+        line_new = '\n\n'.join(lines_new)
+        cprint(line_new, 'green')
+        cprint('-\n', 'red')
 
         history = InMemoryHistory()
         while True:
@@ -83,12 +83,13 @@ elif Nargv == 2:
                 else:
 
                     idl.sendline(command)
-                    idl.expect('IDL> ', timeout=10)
+                    idl.expect('IDL> ', timeout=86400)
                     message = idl.before[len(command):].strip()
                     if len(message) > 0:
                         message_before = colored('Out:\n', 'blue')
                         message = message_before + idl.before[len(command):].strip()
                         print(message)
+                    print()
 
             except EOFError:
 
