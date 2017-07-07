@@ -11,6 +11,7 @@ from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
 from pygments.lexers import IDLLexer
 from prompt_toolkit.layout.lexers import PygmentsLexer
+from termcolor import colored, cprint
 
 Nargv = len(sys.argv)
 
@@ -85,6 +86,8 @@ elif Nargv == 2:
                     idl.expect('IDL> ', timeout=10)
                     message = idl.before[len(command):].strip()
                     if len(message) > 0:
+                        message_before = colored('Out:\n', 'blue')
+                        message = message_before + idl.before[len(command):].strip()
                         print(message)
 
             except EOFError:
