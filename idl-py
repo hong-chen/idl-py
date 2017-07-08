@@ -142,6 +142,7 @@ def START():
                     idl.sendline(command)
                     idl.expect('IDL> ', timeout=None)
                     message = idl.before[len(command):].strip()
+                    # idl.logfile = sys.stdout
                     if len(message) > 0:
                         message_before = colored('Out:\n', 'blue')
                         if 'Execution halted' in message:
