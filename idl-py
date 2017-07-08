@@ -6,7 +6,6 @@
 
 import sys
 import os
-import shutil
 import pexpect
 from prompt_toolkit import prompt, AbortAction
 from prompt_toolkit.history import InMemoryHistory
@@ -61,7 +60,7 @@ def CPRINT_DOT_R(fname, idl):
 
     command = '.r %s' % fname
     idl.sendline(command)
-    idl.expect('IDL> ', timeout=10)
+    idl.expect('IDL> ', timeout=None)
 
     message_before = colored('Out:\n', 'blue')
     message = message_before + idl.before[len(command):].strip()
@@ -83,8 +82,9 @@ def START():
     if Nargv==1 or Nargv==2:
 
         if Nargv == 1:
+
             idl = pexpect.spawnu('idl')
-            idl.expect('IDL> ', timeout=10)
+            idl.expect('IDL> ', timeout=None)
             print(idl.before.rstrip('\n'))
 
         elif Nargv == 2:
@@ -99,7 +99,7 @@ def START():
             if fname.split('.')[-1].lower() == 'pro':
 
                 idl = pexpect.spawnu('idl')
-                idl.expect('IDL> ', timeout=10)
+                idl.expect('IDL> ', timeout=None)
                 print(idl.before.rstrip('\n'))
 
                 print('IDL-PY> ')
@@ -140,16 +140,18 @@ def START():
                 else:
 
                     idl.sendline(command)
-                    idl.expect('IDL> ', timeout=86400)
+                    idl.expect('IDL> ', timeout=None)
                     message = idl.before[len(command):].strip()
                     if len(message) > 0:
                         message_before = colored('Out:\n', 'blue')
                         if 'Execution halted' in message:
-                            if shutil.which(command) != None:
+                            if pexpect.which(command) != None:
                                 message = 'this is a shell command, will do something with it later...'
                                 message = message_before + message
                             else:
                                 message = message_before + colored(idl.before[len(command):].strip(), 'red')
+                        else:
+                            message = message_before + message
 
                         print(message)
 
