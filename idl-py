@@ -146,6 +146,7 @@ def START():
                     if len(message) > 0:
                         message_before = colored('Out:\n', 'blue')
                         if 'Execution halted' in message:
+
                             if pexpect.which(command) != None:
                                 message = 'this is a shell command, will do something with it later...'
                                 message = message_before + message
